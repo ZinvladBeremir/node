@@ -8,6 +8,6 @@ const todoSchema = new Schema({
     }
 }, {timestamps: true})
 
-const Todo = mongoose.model('Todo', todoSchema)
+const Todos = mongoose.model('Todos', todoSchema)
 
-module.exports = Todo
+module.exports = Todos
