@@ -8,6 +8,17 @@ const getTodos = async (req, res) => {
     }
 }
 
+const getTodo = async (req, res) => {
+    try {
+        const {id} = req.params
+
+        const todo = await Todos.findById(id)
+        res.send(todo)
+    } catch (e) {
+        console.log('some error ', e)
+    }
+}
+
 const createTodo = async (req, res) => {
     try {
         const {text} = req.body;
@@ -20,10 +31,8 @@ const createTodo = async (req, res) => {
 
 const editTodo = async (req, res) => {
     try {
-        const {id} = req.params
-        const {text} = req.body
-
-        await Todos.findByIdAndUpdate(id, text)
+        const {id, text} = req.body
+        await Todos.findByIdAndUpdate(id, {text: text})
         res.send({status: 'OK'})
     } catch (e) {
         console.log('some error ', e)
@@ -41,4 +50,4 @@ const deleteTodo = async (req, res) => {
     }
 }
 
-module.exports = {getTodos, createTodo, editTodo, deleteTodo}
+module.exports = {getTodos, getTodo, createTodo, editTodo, deleteTodo}
