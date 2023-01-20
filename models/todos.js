@@ -5,6 +5,12 @@ const todoSchema = new Schema({
     text: {
         type: String,
         require: true
+    },
+    end_date: {
+        type: String
+    },
+    isMarked: {
+        type: Boolean
     }
 }, {timestamps: true})
 

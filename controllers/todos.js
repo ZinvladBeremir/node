@@ -1,11 +1,24 @@
 const Todos = require('../models/todos')
+
 const getTodos = async (req, res) => {
-    try {
-        const list = await Todos.find()
-        res.send(list)
-    } catch (e) {
-        console.log('some error ', e)
+    const {marked} = req.query
+
+    if (!!marked) {
+        try {
+            const list = await Todos.find({isMarked:true})
+            res.send(list)
+        } catch (e) {
+            console.log('some error ', e)
+        }
+    } else {
+        try {
+            const list = await Todos.find()
+            res.send(list)
+        } catch (e) {
+            console.log('some error ', e)
+        }
     }
+
 }
 
 const getTodo = async (req, res) => {
@@ -21,8 +34,9 @@ const getTodo = async (req, res) => {
 
 const createTodo = async (req, res) => {
     try {
-        const {text} = req.body;
-        const newTodo = await new Todos({text}).save()
+        const {text, end_date} = req.body;
+        const endDate = !!end_date ? new Date(end_date).toISOString() : null
+        const newTodo = await new Todos({text, isMarked: false, end_date: endDate}).save()
         res.send(newTodo)
     } catch (e) {
         console.log('some error ', e)
@@ -31,9 +45,15 @@ const createTodo = async (req, res) => {
 
 const editTodo = async (req, res) => {
     try {
-        const {id, text} = req.body
-        await Todos.findByIdAndUpdate(id, {text: text})
-        res.send({status: 'OK'})
+        const {id, text, isMarked, end_date} = req.body
+        if (!id) {
+            res.status(400).send({message: 'id isn\'t present'})
+        } else {
+            const endDate = !!end_date ? new Date(end_date).toISOString() : null
+            await Todos.findByIdAndUpdate(id, {text: text || '', isMarked: isMarked || false, end_date: endDate})
+            res.send({status: 'OK'})
+        }
+
     } catch (e) {
         console.log('some error ', e)
     }

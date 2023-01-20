@@ -4,7 +4,7 @@ module.exports = {
             id:{
                 type:'string',
                 description:"An id of a todo",
-                example: "63c6f4c23b76154939dc6ebc"
+                example: "63c8fa6f2e0b4cd5b641c402"
             },
             Todo:{
                 type:'object',
@@ -18,6 +18,16 @@ module.exports = {
                         type:'string',
                         description:"Todo's title",
                         example:"Coding in JavaScript"
+                    },
+                    end_date:{
+                        type:'string',
+                        description:"Todo's end date",
+                        example:"12-03-3023"
+                    },
+                    isMarked:{
+                        type:'boolean',
+                        description:"Todo's end date",
+                        example:"false"
                     },
                     createdAt:{
                         type:'string',
@@ -38,7 +48,17 @@ module.exports = {
                         type:'string',
                         description:"Todo's title",
                         example:"Coding in JavaScript"
-                    }
+                    },
+                    end_date:{
+                        type:'string',
+                        description:"Todo's end date",
+                        example:"12-03-3023"
+                    },
+                    isMarked:{
+                        type:'boolean',
+                        description:"Todo's end date",
+                        example:"false"
+                    },
                 }
             },
             TodoUpdate:{
@@ -53,7 +73,17 @@ module.exports = {
                         type:'string',
                         description:"Todo's title",
                         example:"Coding in JavaScript"
-                    }
+                    },
+                    end_date:{
+                        type:'string',
+                        description:"Todo's end date",
+                        example:"12-03-3023"
+                    },
+                    isMarked:{
+                        type:'boolean',
+                        description:"Todo's end date",
+                        example:"false"
+                    },
                 }
             },
             Error:{
