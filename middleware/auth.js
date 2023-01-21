@@ -12,6 +12,7 @@ module.exports = (req, res, next) => {
             res.status(400).send({message: 'User not  authorised'})
         } else {
             const decoded = jwt.verify(token, process.env.SECRET_ACCESS)
+            req.body.user_id = decoded.id
             next()
         }
 
