@@ -1,5 +1,6 @@
 const express = require('express')
-const routes = require('./routes/todos')
+const routesTodos = require('./routes/todos')
+const routesAuth = require('./routes/auth')
 const mongoose = require('mongoose')
 const { checkNextDayTodosAndSendEmail } = require('./utils/mailler');
 require('dotenv').config()
@@ -12,7 +13,9 @@ mongoose
 const app = express()
 
 app.use(express.json())
-app.use(routes)
+
+app.use(routesTodos)
+app.use(routesAuth)
 
 checkNextDayTodosAndSendEmail()
 
