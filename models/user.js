@@ -11,6 +11,11 @@ const userSchema = new Schema({
         type: String,
         require: true
     },
+    verified: {
+        type: Boolean,
+        require: true,
+        default: false
+    },
 })
 
 const User = mongoose.model('User', userSchema)

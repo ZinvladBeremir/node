@@ -8,8 +8,7 @@ const todoSchema = new Schema({
     },
     user_id: {
         ref: 'User',
-        type: Schema.Types.ObjectId,
-        required: true
+        type: Schema.Types.ObjectId
     },
     end_date: {
         type: String
