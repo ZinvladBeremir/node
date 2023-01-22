@@ -22,7 +22,6 @@ function getOption(token) {
     }
 }
 
-// every day at 8-30
 const sendEmailVerification = async ({token}) => {
     try {
         transporter.sendMail(getOption(token), error => console.log(error ? 'error while sending email verification' : 'success while sending email verification'))
