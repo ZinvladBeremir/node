@@ -20,8 +20,8 @@ const registration = async (req, res) => {
             } else {
                 const hashPass = bcrypt.hashSync(password, 7)
                 const user = await new User({email, password: hashPass, verified: false}).save()
-                const token = await new Token({token: generateAccessToken(user._id)}).save()
-                await sendEmailVerification(token)
+                const tokens = await new Token({...generateTokens(user._id)}).save()
+                await sendEmailVerification(tokens.access_token)
                 res.status(201).send({message: 'check your mail for verification'})
             }
         }
@@ -34,7 +34,7 @@ const verification = async (req, res) => {
     try {
         const {token} = req.params
         const decoded = jwt.verify(token, process.env.SECRET_ACCESS)
-        const tokenData = await Token.findOne({token})
+        const tokenData = await Token.findOne({access_token: token})
 
         if(!tokenData) {
             res.status(400).send({message: `invalid link`})
@@ -48,10 +48,35 @@ const verification = async (req, res) => {
     }
 }
 
+const refresh = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken
+        const access_token = req.headers.authorization.split(' ')[1]
 
-const generateAccessToken = (id) => {
+        const decoded = jwt.verify(refreshToken, process.env.SECRET_REFRESH_TOKEN)
+
+        const tokenData = await Token.findOne({access_token})
+
+        if(!tokenData || !decoded.id) {
+            res.status(400).send({message: 'wrong token'})
+        } else {
+            const tokens = generateTokens(decoded.id)
+            res.cookie('refreshToken', tokens.refresh_token, {maxAge: 30*24*60*60*100, httpOnly: true})
+            await Token.findByIdAndUpdate(tokenData._id, {...tokens})
+            res.status(200).send({token: `Bearer ${tokens.access_token}`})
+        }
+
+    } catch (e) {
+        res.status(400).send({message: 'verification error'})
+    }
+}
+
+
+const generateTokens = (id) => {
     const payload = { id }
-    return jwt.sign(payload, process.env.SECRET_ACCESS, {expiresIn: '24h'})
+    const access_token = jwt.sign(payload, process.env.SECRET_ACCESS, {expiresIn: '3m'})
+    const refresh_token = jwt.sign(payload, process.env.SECRET_REFRESH_TOKEN, {expiresIn: '30d'})
+    return {access_token, refresh_token}
 }
 const login = async (req, res) => {
     try {
@@ -66,8 +91,10 @@ const login = async (req, res) => {
             } else if (!user.verified) {
                 res.status(400).send({message: 'user not verified'})
             } else {
-                const token = generateAccessToken(user._id)
-                res.status(200).send({token: `Bearer ${token}`})
+                const tokens = generateTokens(user._id)
+                res.cookie('refreshToken', tokens.refresh_token, {maxAge: 30*24*60*60*100, httpOnly: true})
+                await new Token(tokens).save()
+                res.status(200).send({token: `Bearer ${tokens.access_token}`})
             }
         }
 
@@ -84,4 +111,4 @@ const getUsers = async (req, res) => {
     }
 }
 
-module.exports = { registration, login, getUsers, verification }
+module.exports = { registration, login, getUsers, verification, refresh }
