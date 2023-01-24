@@ -1,6 +1,7 @@
 const Router = require('express').Router
 const { registration, login, getUsers, verification, refresh } = require('../controllers/auth')
 const { registerGithub } = require('../controllers/github')
+const { sendStream, sendBuffer } = require('../controllers/video')
 const { check } = require('express-validator')
 const path = require('path')
 
@@ -32,6 +33,10 @@ router.get('/github-login', (req, res) => {
 });
 router.get('/api/github', passport.authenticate('github'));
 router.get('/api/github/register', registerGithub);
+
+
+router.get('/playvideo', sendStream);
+router.get('/video/buffer', sendBuffer);
 
 
 module.exports = router
